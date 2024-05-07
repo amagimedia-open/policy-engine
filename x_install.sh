@@ -23,7 +23,9 @@ pygraphviz
 tabulate
 colorama
 sqlparse
+pytest
 EOD
 
+# to create 
 pip install -r requirements.txt
 

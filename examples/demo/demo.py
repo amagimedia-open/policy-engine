@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import rdflib
+import os
 
 from mosaicrown import utils
 from mosaicrown import vocabularies
@@ -45,7 +46,7 @@ separator = '\n--------------------------------------------------' + \
 debug_info = False
 
 
-def policy_loading():
+def policy_loading(port=8000):
     """Load the running example policy into the graph."""
     # create empty RDF graph
     print("[*] Create the RDF graph")
@@ -57,11 +58,11 @@ def policy_loading():
 
     # parse MOSAICROWN vocabulary
     # only the namespace is downloaded at runtime by RDFLib, NOT the vocabulary
-    print("\n[*] Load MOSAICROWN vocabolary")
+    print("\n[*] Load MOSAICROWN vocabulary")
     graph.parse(location=vocabularies.JSON_LD["MOSAICROWN"], format="json-ld")
 
     pnames = ["p1", "p2", "p3"]
-    pbasepath = "http://localhost:8000/"
+    pbasepath = "http://localhost:" + port + "/"
     pext = '.jsonld'
 
     # parse policy
@@ -95,9 +96,12 @@ def preliminary_policy_expansion(graph):
 
 
 def main():
+
+    port = int(os.getenv("DEMO_PORT", 8000))
+
     """Configure and run the demo example."""
     # loading the policy into RDF graph
-    graph = policy_loading()
+    graph = policy_loading(port)
 
     # expand the graph with hierarchy concept on targets and assignees
     print("\n[*] Expand the policy graph with the hierarchy concept")

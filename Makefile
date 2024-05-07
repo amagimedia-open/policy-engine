@@ -10,6 +10,7 @@ FLAKE8         := $(VENV)/bin/flake8
 IPYTHON        := $(VENV)/bin/ipython
 PYTEST         := $(VENV)/bin/pytest
 PIDFILE        := $(VENV)/webserver.pid
+DEMO_PORT      := ${DEMO_PORT}
 
 PACKAGES       := mosaicrown
 REQUIREMENTS   := requirements.txt
@@ -76,9 +77,9 @@ demo: | start_demo_server _demo stopserver
 
 start_demo_server: examples/demo/policy $(VENV)
 	@ make -s _kill_server;
-	@ echo "[*] Starting web server"
+	@ echo "[*] Starting web server (demo)"
 	@ echo "[i] Policy vocabulary now available"
-	@ cd $< ; $(PYTHON) -m http.server >/dev/null & echo $$! > $(PIDFILE)
+	@ cd $< ; $(PYTHON) -m http.server $(DEMO_PORT) >/dev/null & echo $$! > $(PIDFILE)
 
 _demo: $(VENV)
 	$(call run_python,examples/demo/demo.py)
