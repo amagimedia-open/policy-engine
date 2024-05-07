@@ -13,7 +13,14 @@
 # limitations under the License.
 
 # json-ld vocabulary URLs.
+
+import os
+
+port = str(os.getenv("DEMO_PORT", "8000"))
+
 JSON_LD = {
    "ODRL":        "https://www.w3.org/ns/odrl/2/ODRL22.json",
-   "MOSAICROWN":  "http://localhost:8000/ns/mosaicrown/vocabulary.json"
+   "MOSAICROWN":  "http://localhost:" + port + "/ns/mosaicrown/vocabulary.json"
 }
+
+#   "MOSAICROWN":  "http://localhost:8000/ns/mosaicrown/vocabulary.json"

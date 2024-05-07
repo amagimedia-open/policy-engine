@@ -62,7 +62,7 @@ def policy_loading(port=8000):
     graph.parse(location=vocabularies.JSON_LD["MOSAICROWN"], format="json-ld")
 
     pnames = ["p1", "p2", "p3"]
-    pbasepath = "http://localhost:" + port + "/"
+    pbasepath = "http://localhost:" + str(port) + "/"
     pext = '.jsonld'
 
     # parse policy
