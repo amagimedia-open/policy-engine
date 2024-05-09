@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import rdflib
 
+port = str(os.getenv("DEMO_PORT", "8000"))
+
 ODRL = rdflib.Namespace("http://www.w3.org/ns/odrl/2/")
-MOSAICROWN = rdflib.Namespace("http://localhost:8000/ns/mosaicrown/")
+MOSAICROWN = rdflib.Namespace("http://localhost:" + port + "/ns/mosaicrown/")

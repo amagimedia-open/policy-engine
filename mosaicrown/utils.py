@@ -112,6 +112,7 @@ def add_iri_hierarchy_to_graph(graph, iri, predicate, reverse=False):
     :reverse: If reverse is True, the triples subject and object are swapped.
     """
     paths = [rdflib.URIRef(path) for path in generate_subpaths(iri)]
+    logging.debug(f"add_iri_hierarchy_to_graph: paths={paths}")
     for parent, child in zip(paths, paths[1:]):
         subj, obj = (child, parent) if reverse else (parent, child)
         logging.debug(f"Adding ({subj}, {predicate}, {obj})")

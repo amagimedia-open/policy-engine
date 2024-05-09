@@ -14,6 +14,8 @@
 
 import rdflib
 import os
+import logging
+import signal
 
 from mosaicrown import utils
 from mosaicrown import vocabularies
@@ -53,7 +55,7 @@ def policy_loading(port=8000):
     graph = rdflib.Graph()
 
     # parse ODRL vocabolary
-    print("\n[*] Load ODRL vocabolary")
+    print("\n[*] Load ODRL vocabulary")
     graph.parse(vocabularies.JSON_LD["ODRL"], format="json-ld")
 
     # parse MOSAICROWN vocabulary
@@ -83,23 +85,43 @@ def preliminary_policy_expansion(graph):
     """
     # expanding hierarchy of targets
     for target in utils.get_targets(graph):
+        logging.debug(f"preliminary_policy_expansion: target={target}")
         utils.add_iri_hierarchy_to_graph(graph,
                                          target,
                                          predicate=ODRL.partOf,
                                          reverse=True)
     # expanding hierarchy of subjects
     for assignee in utils.get_assignee(graph):
+        logging.debug(f"preliminary_policy_expansion: assignee={assignee}")
         utils.add_iri_hierarchy_to_graph(graph,
                                          assignee,
                                          predicate=MOSAICROWN.belongsTo,
                                          reverse=True)
 
+def ctrl_c_handler(signum, frame):
+    logging.info("Ctrl-c was pressed.")
+    logging.shutdown()
+    exit(10)
 
 def main():
 
-    port = int(os.getenv("DEMO_PORT", 8000))
-
     """Configure and run the demo example."""
+
+    # setup
+
+    port         = int(os.getenv("DEMO_PORT", 8000))
+    log_level    = os.getenv("LOG_LEVEL", "INFO")
+    log_filename = os.getenv("LOG_FILENAME", "log.txt")
+
+    logging.root.handlers = []
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[ logging.FileHandler(log_filename) ]
+        )
+
+    signal.signal(signal.SIGINT, ctrl_c_handler)
+
     # loading the policy into RDF graph
     graph = policy_loading(port)
 
