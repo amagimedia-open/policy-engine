@@ -111,6 +111,7 @@ def add_iri_hierarchy_to_graph(graph, iri, predicate, reverse=False):
     :predicate: The predicate that will be used to generate the triples.
     :reverse: If reverse is True, the triples subject and object are swapped.
     """
+    logging.debug(f"add_iri_hierarchy_to_graph: iri={iri}, predicate={predicate}, reverse={reverse}")
     paths = [rdflib.URIRef(path) for path in generate_subpaths(iri)]
     logging.debug(f"add_iri_hierarchy_to_graph: paths={paths}")
     for parent, child in zip(paths, paths[1:]):
@@ -226,6 +227,13 @@ def get_rules(graph, targets, assignee, action, purpose, pred, ns=None,
         requested columns (as specified in the `targets` dictionary).
     """
 
+    logging.debug(f"get_rules: targets={targets}")
+    logging.debug(f"get_rules: assignee={assignee}")
+    logging.debug(f"get_rules: purpose={purpose}")
+    logging.debug(f"get_rules: pred={pred}")
+    logging.debug(f"get_rules: ns={ns}")
+    logging.debug(f"get_rules: expand_graph={expand_graph}")
+
     if expand_graph:
         add_iri_hierarchy_to_graph(graph, assignee, ODRL.belongsTo, True)
         add_iri_hierarchy_to_graph(graph, purpose, ODRL.partOf, True)
@@ -276,13 +284,17 @@ def get_rules(graph, targets, assignee, action, purpose, pred, ns=None,
                 "purpose": purpose
             }
 
+            logging.debug(f"get_rules: bindings={bindings}")
+
             # Extract the rule uids that has predicate on the column.
             result = graph.query(query, initBindings=bindings)
 
             column_rules[column_IRI] = set(row[0] for row in result)
+            logging.debug(f"get_rules: column_IRI={column_IRI}, rules={rules}")
 
         # Add the column rules to the dictionary of table rules.
         rules[table_IRI] = column_rules
+        logging.debug(f"get_rules: table_IRI={table_IRI}, rules={rules}")
 
     return rules
 
@@ -312,6 +324,7 @@ def check_permission(graph, targets, assignee, action, purpose, ns=None,
         pred=ODRL.permission,
         ns=ns,
         expand_graph=expand_graph)
+    logging.debug(f"check_permission: rules={rules}")
 
     # For each table, get the intersection of the permission rules, since for
     # each table we want to find a permission rule that grants the join

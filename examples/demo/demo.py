@@ -47,7 +47,6 @@ separator = '\n--------------------------------------------------' + \
             '--------------------------------------------------'
 debug_info = False
 
-
 def policy_loading(port=8000):
     """Load the running example policy into the graph."""
     # create empty RDF graph
@@ -107,7 +106,7 @@ def main():
 
     """Configure and run the demo example."""
 
-    # setup
+    # ---- setup ----
 
     port         = int(os.getenv("DEMO_PORT", 8000))
     log_level    = os.getenv("LOG_LEVEL", "INFO")
@@ -116,11 +115,14 @@ def main():
     logging.root.handlers = []
     logging.basicConfig(
         level=log_level,
-        format="%(asctime)s [%(levelname)s] %(message)s",
+        #format="%(asctime)s [%(levelname)s] %(message)s",
+        format="%(message)s",
         handlers=[ logging.FileHandler(log_filename) ]
         )
 
     signal.signal(signal.SIGINT, ctrl_c_handler)
+
+    # ---------------
 
     # loading the policy into RDF graph
     graph = policy_loading(port)
@@ -130,6 +132,8 @@ def main():
     preliminary_policy_expansion(graph)
 
     # serializing the graph to ease testing
+    #debug_info = (log_level == "DEBUG")
+
     if debug_info:
         print('\n[*] Policy graph serialization\n')
         print(triples_table(graph))
@@ -138,7 +142,11 @@ def main():
         print('\tWrite action:\t\t', write)
         print('\tStatistical purpose:\t', statistical)
 
+    graph.serialize(destination='demo_graph.ttl', format='turtle')
+
     print(separator)
+    print("test case 1")
+    logging.debug("test case 1")
     input()
 
     # all tables stored in the database
@@ -152,6 +160,7 @@ def main():
     print(f"\n[*] Access request:\n\t{query}")
     # extracting the targets
     targets = get_targets_from_query(query, target_IRIs)
+    logging.debug(f"targets={targets}")
     # checking access
     utils.check_access(graph, targets, administrative, read, statistical)
 
